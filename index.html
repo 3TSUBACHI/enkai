@@ -2,8 +2,11 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>enkai</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    
     <style>
       /* スタート画面 */
       #start-screen {
@@ -29,9 +32,9 @@
       }
       input {
         margin-top: 10px;
-        padding: 4px 6px;     /* 小さめ */
-        font-size: 0.9em;     /* 少し文字小さめ */
-        width: 160px;         /* 横幅も少し短め */
+        padding: 4px 6px;
+        font-size: 0.9em;
+        width: 160px;
       }
 
       /* おまけ画面 */
@@ -51,15 +54,31 @@
       }
       #bonus-screen img {
         margin-top: 20px;
-        max-width: 80%;   /* 横幅に収まる */
+        max-width: 80%;
         height: auto;
         border: 2px solid #fff;
         border-radius: 8px;
       }
+
+      /* 戻るボタン */
+      #back-button {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1100;
+        padding: 6px 12px;
+        font-size: 0.9em;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        background: rgba(255,255,255,0.8);
+        display: none; /* デフォルト非表示 */
+      }
+      
     </style>
   </head>
   <body>
-    <!-- 🌟 スタート画面 -->
+    <!--  スタート画面 -->
     <div id="start-screen">
       <h1>無限縁会! ～ENTERTAINMENTS!～会場</h1>
       <p>操作方法：</p>
@@ -70,7 +89,7 @@
       <p>うにお願いします</p>
       <button id="start-button">スタート</button>
 
-      <!-- 🔑 パスワード入力（小さめ） -->
+      <!--  パスワード入力 -->
       <h1> </h1>
       <input type="password" id="secret-input" placeholder="キーワードを入力">
       <button id="bonus-button">おまけを見る</button>
@@ -78,7 +97,36 @@
       <p>製作者: 三ツ鉢(@Mi2Bachi_P)</p>
     </div>
 
-    <!-- 🌌 A-Frameシーン -->
+    <!--  おまけ画面 -->
+    <div id="bonus-screen">
+      <div>
+        <h2>✈️見つけてくれてありがとう😽</h2>
+        <p>ネップリにて特製ステッカーをプレゼント！</p>
+        <p>※イベント終了後一般公開します</p>
+        <h2>ユーザー番号：WUKLU3DWF9</h2>
+        <p>ローソン/ファミマ/ミニストップ・ステッカー印刷・L版フチ無し推奨</p>
+        <p>印刷報告・写真のSNSアップOK！</p>
+        <img src="bonus.png" alt="おまけ画像">
+      </div>
+    </div>
+
+    <!-- ⬅ 戻るボタン -->
+    <button id="back-button">← 戻る</button>
+    <button id="gyro-button" style="
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1100;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255,255,255,0.8);
+">
+  ジャイロON
+</button>
+
+
+    <!--  A-Frameシーン -->
     <a-scene>
       <a-entity id="rig" position="0 8 10" movement-controls="speed: 0.3">
         <a-camera wasd-controls look-controls="pointerLockEnabled: true"></a-camera>
@@ -96,96 +144,145 @@
       <a-sky src="space.jpg"></a-sky>
     </a-scene>
 
-    <!-- 🎁 おまけ画面 -->
-    <div id="bonus-screen">
-      <div>
-        <h2>✈️見つけてくれてありがとう😽</h2>
-        <p>ネップリにて特製ステッカーをプレゼント！</p>
-        <p>※イベント終了後一般公開します</p>
-        <h2>ユーザー番号：WUKLU3DWF9</h2>
-        <p>ローソン/ファミマ・ステッカー印刷・L版サイズ縁無し推奨</p>
-        <!-- 🖼️ 画像を追加 -->
-        <img src="bonus.png" alt="おまけ画像">
-      </div>
-    </div>
-
     <script>
       const startBtn = document.getElementById("start-button");
       const bonusBtn = document.getElementById("bonus-button");
       const startScreen = document.getElementById("start-screen");
       const bonusScreen = document.getElementById("bonus-screen");
+      const backBtn = document.getElementById("back-button");
       const input = document.getElementById("secret-input");
+      const isMobile = /iPhone|Android/i.test(navigator.userAgent);
+      const gyroBtn = document.getElementById("gyro-button");
+      const camera = document.querySelector("a-camera");
+      const rig = document.getElementById("rig");
 
-      // スタートボタンでスタート画面を閉じる
+function move(direction) {
+  const pos = rig.getAttribute("position");
+
+  if (direction === "forward") pos.z -= 0.5;
+  if (direction === "back") pos.z += 0.5;
+  if (direction === "left") pos.x -= 0.5;
+  if (direction === "right") pos.x += 0.5;
+
+  rig.setAttribute("position", pos);
+}
+
+document.getElementById("forward").onclick = () => move("forward");
+document.getElementById("back").onclick = () => move("back");
+document.getElementById("left").onclick = () => move("left");
+document.getElementById("right").onclick = () => move("right");
+
+
+let gyroEnabled = false;
+
+gyroBtn.addEventListener("click", () => {
+  gyroEnabled = !gyroEnabled;
+
+  camera.setAttribute("look-controls", {
+    pointerLockEnabled: false,
+    magicWindowTrackingEnabled: gyroEnabled
+  });
+
+  gyroBtn.innerText = gyroEnabled ? "ジャイロOFF" : "ジャイロON";
+});
+  if (isMobile) {
+    document.querySelector("#start-screen p:nth-of-type(2)").innerText = "画面スワイプ … 視点操作";
+    document.querySelector("#start-screen p:nth-of-type(1)").innerText = "画面左下ドラッグ … 移動";
+  }
+
+      // スタートボタン
       startBtn.addEventListener("click", () => {
         startScreen.style.display = "none";
+        backBtn.style.display = "block"; // 戻るボタン表示
       });
 
-      // おまけ画面を表示する（パスワード認証）
+      // おまけ画面
       bonusBtn.addEventListener("click", () => {
-        const keyword = "secret123"; // 🔑 パスワード設定
+        const keyword = "PVS315"; //  パスワード設定
         if (input.value === keyword) {
           startScreen.style.display = "none";
           bonusScreen.style.display = "flex";
+          backBtn.style.display = "block"; // 戻るボタン表示
         } else {
           alert("キーワードが違います！");
         }
       });
+
+      // 戻るボタン
+      backBtn.addEventListener("click", () => {
+        startScreen.style.display = "flex";
+        bonusScreen.style.display = "none";
+        backBtn.style.display = "none"; // 戻るボタン非表示
+      });
     </script>
-  </body>
-</html>
 
-    <!-- 🌈 UVアニメーションコンポーネント -->
-   <script>
-AFRAME.registerComponent("uv-scroll", {
-  schema: {
-    speed: { type: "number", default: 0.1 },
-    materialName: { type: "string", default: "GamingRainbow" }
-  },
-  tick: function (time, timeDelta) {
-    const mesh = this.el.getObject3D("mesh");
-    if (!mesh) return;
-
-    mesh.traverse(obj => {
-      if (obj.isMesh && obj.material && obj.material.name === this.data.materialName) {
-        const tex = obj.material.emissiveMap;
-        if (tex) {
-          tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-          tex.offset.x += this.data.speed * timeDelta / 1000;
+    <!--  UVアニメーションコンポーネント -->
+    <script>
+      AFRAME.registerComponent("uv-scroll", {
+        schema: {
+          speed: { type: "number", default: 0.15 },
+          materialName: { type: "string", default: "GamingRainbow" }
+        },
+        tick: function (time, timeDelta) {
+          const mesh = this.el.getObject3D("mesh");
+          if (!mesh) return;
+          mesh.traverse(obj => {
+            if (obj.isMesh && obj.material && obj.material.name === this.data.materialName) {
+              const tex = obj.material.emissiveMap;
+              if (tex) {
+                tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+                tex.offset.x += this.data.speed * timeDelta / 1000;
+              }
+            }
+          });
         }
-      }
-    });
-  }
-});
-
-</script>
-
+      });
+    </script>
   </head>
-  <body>
-    <a-scene>
+   <body> 
+    <div id="mobile-controls" style="
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1200;
+">
+  <button id="forward">↑</button><br>
+  <button id="left">←</button>
+  <button id="back">↓</button>
+  <button id="right">→</button>
+</div>
+
+    <a-scene> 
       <!-- 一人称カメラ設定：低い位置 & ゆっくり移動 & 自動視点移動 -->
-      <a-entity id="rig" position="0 8 10" movement-controls="speed: 0.3">
-        <a-camera 
-          wasd-controls 
-          look-controls="pointerLockEnabled: true"
-        ></a-camera>
-        <a-camera near="0.1" far="500"></a-camera>
-      </a-entity>
+        <a-entity 
+        id="rig" 
+        position="0 8 10" 
+        movement-controls="speed: 0.3"> 
+          <a-camera
+         wasd-controls
+         look-controls="pointerLockEnabled: false"
+         touch-controls>
+         </a-camera>
 
-      <!-- 🌈 空間モデル + UVスクロール -->
-   <a-gltf-model 
-  src="model.glb" 
-  position="0 0 0" 
-  scale="1 1 1"
-  uv-scroll="speed: 0.1; materialName: GamingRainbow"
-></a-gltf-model>
-
-      <!-- 照明 -->
-      <a-entity light="type: ambient; intensity: 0.15"></a-entity>
-      <a-entity light="type: directional; intensity: 0.15" position="1 3 2"></a-entity>
-
-      <!-- 空の色 -->
-      <a-sky src="space.jpg"></a-sky>
-    </a-scene>
-  </body>
-</html>
+        </a-entity>
+         <!--  空間モデル + UVスクロール --> 
+          <a-gltf-model 
+          src="model.glb" 
+          position="0 0 0" 
+          scale="1 1 1" 
+          uv-scroll="speed: 0.1; materialName: GamingRainbow"
+           ></a-gltf-model> 
+           <!-- 照明 -->
+             <a-entity 
+             light="type: ambient; intensity: 0.15"
+             ></a-entity>
+              <a-entity 
+              light="type: directional; intensity: 0.15" 
+              position="1 3 2"
+              ></a-entity> 
+              <!-- 空の色 --> 
+               <a-sky 
+               src="space.jpg"
+               ></a-sky> 
+            </body> 
+            </html>
