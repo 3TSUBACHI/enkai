@@ -96,12 +96,12 @@
   <body>
     <!--  スタート画面 -->
     <div id="start-screen">
-      <h1>スマホ版</h1>
+      <p> </p>
+      <p>スマホ版</p>
       <h1>無限縁会! ～ENTERTAINMENTS!～会場</h1>
       <p>操作方法：</p>
       <p>左下十字キー … 移動</p>
       <p>画面スワイプ … 視点操作</p>
-      <p>⚠️横画面推奨</p>
       <p>壁をすり抜けないよ</p>
       <p>うにお願いします</p>
       <button id="start-button">スタート</button>
@@ -414,6 +414,21 @@
           if (oldData.wsAxis !== this.data.wsAxis) { this.velocity[oldData.wsAxis] = 0; }
         },
       });
+      const gyroBtn = document.getElementById("gyro-toggle");
+      const camera = document.querySelector("#player a-camera");
+
+       let gyroEnabled = true;
+
+       gyroBtn.addEventListener("click", () => {
+       gyroEnabled = !gyroEnabled;
+
+       camera.setAttribute("look-controls", {
+       pointerLockEnabled: true,
+       magicWindowTrackingEnabled: gyroEnabled
+  });
+
+  gyroBtn.textContent = gyroEnabled ? "Gyro ON" : "Gyro OFF";
+});
     </script>
 
 
@@ -457,6 +472,7 @@
       <div class="buttonUI">
         <button id="rightBtn" type="button" class="button">→</button>
       </div>      
+      <button id="gyro-toggle" class="button">Gyro ON</button>
     </div>
   </body>
 </html>
