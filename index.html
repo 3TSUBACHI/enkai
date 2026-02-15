@@ -391,6 +391,8 @@
           for (const buttonEle of buttonEles) {
             buttonEle.addEventListener("mousedown", this.onMouseDown);
             buttonEle.addEventListener("mouseup", this.onMouseUp);
+            buttonEle.addEventListener("touchstart", this.onMouseDown);
+            buttonEle.addEventListener("touchend", this.onMouseUp);
           }
         },
 
@@ -400,6 +402,8 @@
           for (const buttonEle of buttonEles) {
             buttonEle.removeEventListener("mousedown", this.onMouseDown);
             buttonEle.removeEventListener("mouseup", this.onMouseUp);
+            buttonEle.addEventListener("touchstart", this.onMouseDown);
+            buttonEle.addEventListener("touchend", this.onMouseUp);
           }
         },
 
