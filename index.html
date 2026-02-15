@@ -91,6 +91,15 @@
         background: rgba(255,255,255,0.8);
         display: none; /* デフォルト非表示 */
       }
+      .actions .button {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none; /* iOS長押しメニュー防止 */
+      }
+      .actions .button {
+  touch-action: none;
+      }
+
   </style>
 
   <body>
@@ -447,23 +456,15 @@
 
     <div class="actions">
       <div class="buttonUI">
-        <button id="leftBtn" type="button" class="button">
-          <img src="left.png" alt="left">
-        </button>
+        <button id="leftBtn" type="button" class="button">←</button>
       </div>
       <div class="buttonUI">
-        <button id="upBtn" type="button" class="button">
-          <img src="up.png" alt="up">
-        </button>    
+        <button id="upBtn" type="button" class="button">↑</button>    
         <br>  
-        <button id="downBtn" type="button" class="button">
-          <img src="down.png" alt="down">
-        </button>
+        <button id="downBtn" type="button" class="button">↓</button>
       </div>
       <div class="buttonUI">
-        <button id="rightBtn" type="button" class="button">
-          <img src="right.png" alt="right">
-        </button>
+        <button id="rightBtn" type="button" class="button">→</button>
       </div>      
     </div>
   </body>
