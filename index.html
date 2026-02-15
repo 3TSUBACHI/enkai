@@ -2,11 +2,8 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>enkai</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    
     <style>
       /* スタート画面 */
       #start-screen {
@@ -59,7 +56,22 @@
         border: 2px solid #fff;
         border-radius: 8px;
       }
+      #dpad {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 2000;
+      }
 
+      #dpad button {
+        width: 55px;
+        height: 55px;
+        font-size: 22px;
+        margin: 4px;
+        border-radius: 12px;
+        opacity: 0.85;
+      }
+      
       /* 戻るボタン */
       #back-button {
         position: fixed;
@@ -74,7 +86,6 @@
         background: rgba(255,255,255,0.8);
         display: none; /* デフォルト非表示 */
       }
-      
     </style>
   </head>
   <body>
@@ -112,19 +123,6 @@
 
     <!-- ⬅ 戻るボタン -->
     <button id="back-button">← 戻る</button>
-    <button id="gyro-button" style="
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1100;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background: rgba(255,255,255,0.8);
-">
-  ジャイロON
-</button>
-
 
     <!--  A-Frameシーン -->
     <a-scene>
@@ -151,44 +149,6 @@
       const bonusScreen = document.getElementById("bonus-screen");
       const backBtn = document.getElementById("back-button");
       const input = document.getElementById("secret-input");
-      const isMobile = /iPhone|Android/i.test(navigator.userAgent);
-      const gyroBtn = document.getElementById("gyro-button");
-      const camera = document.querySelector("a-camera");
-      const rig = document.getElementById("rig");
-
-function move(direction) {
-  const pos = rig.getAttribute("position");
-
-  if (direction === "forward") pos.z -= 0.5;
-  if (direction === "back") pos.z += 0.5;
-  if (direction === "left") pos.x -= 0.5;
-  if (direction === "right") pos.x += 0.5;
-
-  rig.setAttribute("position", pos);
-}
-
-document.getElementById("forward").onclick = () => move("forward");
-document.getElementById("back").onclick = () => move("back");
-document.getElementById("left").onclick = () => move("left");
-document.getElementById("right").onclick = () => move("right");
-
-
-let gyroEnabled = false;
-
-gyroBtn.addEventListener("click", () => {
-  gyroEnabled = !gyroEnabled;
-
-  camera.setAttribute("look-controls", {
-    pointerLockEnabled: false,
-    magicWindowTrackingEnabled: gyroEnabled
-  });
-
-  gyroBtn.innerText = gyroEnabled ? "ジャイロOFF" : "ジャイロON";
-});
-  if (isMobile) {
-    document.querySelector("#start-screen p:nth-of-type(2)").innerText = "画面スワイプ … 視点操作";
-    document.querySelector("#start-screen p:nth-of-type(1)").innerText = "画面左下ドラッグ … 移動";
-  }
 
       // スタートボタン
       startBtn.addEventListener("click", () => {
@@ -240,30 +200,17 @@ gyroBtn.addEventListener("click", () => {
     </script>
   </head>
    <body> 
-    <div id="mobile-controls" style="
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1200;
-">
-  <button id="forward">↑</button><br>
-  <button id="left">←</button>
-  <button id="back">↓</button>
-  <button id="right">→</button>
-</div>
-
     <a-scene> 
       <!-- 一人称カメラ設定：低い位置 & ゆっくり移動 & 自動視点移動 -->
         <a-entity 
         id="rig" 
         position="0 8 10" 
         movement-controls="speed: 0.3"> 
-          <a-camera
-         wasd-controls
-         look-controls="pointerLockEnabled: false"
-         touch-controls>
-         </a-camera>
-
+          <a-camera 
+          near="0.1" far="500" 
+          wasd-controls 
+          look-controls="pointerLockEnabled: true" 
+          ></a-camera> 
         </a-entity>
          <!--  空間モデル + UVスクロール --> 
           <a-gltf-model 
@@ -284,5 +231,6 @@ gyroBtn.addEventListener("click", () => {
                <a-sky 
                src="space.jpg"
                ></a-sky> 
+              </a-scene> 
             </body> 
             </html>
