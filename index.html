@@ -414,21 +414,6 @@
           if (oldData.wsAxis !== this.data.wsAxis) { this.velocity[oldData.wsAxis] = 0; }
         },
       });
-      const gyroBtn = document.getElementById("gyro-toggle");
-      const camera = document.querySelector("#player a-camera");
-
-       let gyroEnabled = true;
-
-       gyroBtn.addEventListener("click", () => {
-       gyroEnabled = !gyroEnabled;
-
-       camera.setAttribute("look-controls", {
-       pointerLockEnabled: true,
-       magicWindowTrackingEnabled: gyroEnabled
-  });
-
-  gyroBtn.textContent = gyroEnabled ? "Gyro ON" : "Gyro OFF";
-});
     </script>
 
 
@@ -462,17 +447,24 @@
 
     <div class="actions">
       <div class="buttonUI">
-        <button id="leftBtn" type="button" class="button">←</button>
+        <button id="leftBtn" type="button" class="button">
+          <img src="left.png" alt="left">
+        </button>
       </div>
       <div class="buttonUI">
-        <button id="upBtn" type="button" class="button">↑</button>    
+        <button id="upBtn" type="button" class="button">
+          <img src="up.png" alt="up">
+        </button>    
         <br>  
-        <button id="downBtn" type="button" class="button">↓</button>
+        <button id="downBtn" type="button" class="button">
+          <img src="down.png" alt="down">
+        </button>
       </div>
       <div class="buttonUI">
-        <button id="rightBtn" type="button" class="button">→</button>
+        <button id="rightBtn" type="button" class="button">
+          <img src="right.png" alt="right">
+        </button>
       </div>      
-      <button id="gyro-toggle" class="button">Gyro ON</button>
     </div>
   </body>
 </html>
